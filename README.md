@@ -3,7 +3,7 @@ Permite tener varios equipos en red con la misma configuración y personalizaci�
 
 El qgis cada vez que se abre, busca un script de python concreto startup.py en y si existe en C:\Users\usuario_x\AppData\Roaming\QGIS\QGIS3 lo ejecuta. Su única función es llamar a otro script SIGMENA.PY este ya en una unidad de red con todas las ordenes que queramos meter. Podemos cambiar este último script que está en red y que comprueban todos los usuarios al arrancar y siempre estarán actualizados. 
 
-De momento hace lo siguiente
+TAREAS QUE EJECUTA
 
 1.Comprueba si están instalados y activados los complementos que se consideren interesantes, si no lo están los instala. (sigpac, alidadas, gpsdescargacarga, hectáreas, silvilidar, zoomSigmena).
 
@@ -30,13 +30,13 @@ De momento hace lo siguiente
 
 INSTRUCCIONES DE INSTALACION
 
-startup.py hay que ponerlo en C:\Users\usuario_x\AppData\Roaming\QGIS\QGIS3  en cada equipo en el que queremos que funcione.
+  startup.py hay que ponerlo en C:\Users\usuario_x\AppData\Roaming\QGIS\QGIS3  en cada equipo en el que queremos que funcione.
 
-SIGMENA.py hay que ponerlo en O:/sigmena/utilidad/PROGRAMA/QGIS/
+  SIGMENA.py hay que ponerlo en O:/sigmena/utilidad/PROGRAMA/QGIS/
 
-SPED2ETv2.gsb hay que ponerlo en O:/sigmena/utilidad/PROGRAMA/QGIS/ , aunque de momento no funciona por un tema de permisos y hay que pegarlo a mano en C:/Program Files/QGIS 3.10/share/proj/SPED2ETV2.gsb. 
+  SPED2ETv2.gsb hay que ponerlo en O:/sigmena/utilidad/PROGRAMA/QGIS/ , aunque de momento no funciona por un tema de permisos y hay que pegarlo a mano en C:/Program Files/QGIS 3.10/share/proj/SPED2ETV2.gsb. 
 
-QGISCUSTOMIZATION3.ini hay que ponerlo en O:/sigmena/utilidad/PROGRAMA/QGIS/ , y después él se autocopia en cada equipo si se actualiza.
+  QGISCUSTOMIZATION3.ini hay que ponerlo en O:/sigmena/utilidad/PROGRAMA/QGIS/ , y después él se autocopia en cada equipo si se actualiza.
 
 
 Los complementos los coge de O:/sigmena/utilidad/PROGRAMA/QGIS/Complementos/ , comprimidos en zip.
