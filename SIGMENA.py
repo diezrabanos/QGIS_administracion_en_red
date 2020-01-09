@@ -9,7 +9,7 @@ import os
 import shutil
 
 #lista de complementos a tener instalados
-complementos=['sigpac','alidadas','gpsDescargaCarga','hectareas','silvilidar','zoomSigmena']
+complementos=['sigpac','alidadas','gpsDescargaCarga','hectareas','silvilidar','zoomSigmena','puntossigmena']
 #lista de servicios wms a tener cargados
 lista_WMS_URL=["http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx","http://www.idee.es/wms/pnoa/pnoa?"]
 lista_WMS_NAME=["Catastro","Ortofoto_reciente"]
@@ -18,7 +18,7 @@ lista_WMS_NAME=["Catastro","Ortofoto_reciente"]
 def sigmena():
     #lo que pongamos aqui se va a reproducir cada vez que se abra un qgis en forma de ventana a la que hay que dar a aceptar, vale para informacion muy importante pero es un toston
     #QMessageBox.information(None, "SIGMENA", "Abres un QGIS configurado por SIGMENA") 
-    iface.messageBar().pushMessage("SIGMENA", "Acabas de abrir una instancia de QGIS configurada por SIGMENA", duration=0)
+    iface.messageBar().pushMessage("SIGMENA", "Acabas de abrir una instancia de QGIS configurada por SIGMENA", duration=15)
     
 #respecto a los sistemas de referencia con ello lo definimos por defecto a nivel usuario.
     crs = 'EPSG:25830'
@@ -60,6 +60,7 @@ def sigmena():
         QSettings().setValue('/PythonPlugins/hectareas','true')
         QSettings().setValue('/PythonPlugins/sigpac','true')
         QSettings().setValue('/PythonPlugins/silvilidar','true')
+        QSettings().setValue('/PythonPlugins/puntossigmena','true')
     except:
         pass
 #para que no pierda tiempo buscando si hay actualizaciones de los complementos instalados
