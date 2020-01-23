@@ -9,7 +9,7 @@ import os
 import shutil
 
 #lista de complementos a tener instalados
-complementos=['sigpac','alidadas','gpsDescargaCarga','hectareas','silvilidar','zoomSigmena','puntossigmena']
+complementos=['sigpac','alidadas','gpsDescargaCarga','hectareas','silvilidar','zoomSigmena','puntossigmena','ptos2pol']
 #lista de servicios wms a tener cargados
 lista_WMS_URL=["http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx","http://www.idee.es/wms/pnoa/pnoa?"]
 lista_WMS_NAME=["Catastro","Ortofoto_reciente"]
@@ -61,6 +61,7 @@ def sigmena():
         QSettings().setValue('/PythonPlugins/sigpac','true')
         QSettings().setValue('/PythonPlugins/silvilidar','true')
         QSettings().setValue('/PythonPlugins/puntossigmena','true')
+        QSettings().setValue('/PythonPlugins/ptos2pol','true')
     except:
         pass
 #para que no pierda tiempo buscando si hay actualizaciones de los complementos instalados
@@ -108,6 +109,68 @@ def sigmena():
 #copiar el archivo de configuracion visual de qgis
     usuario= QgsApplication.qgisSettingsDirPath()
     shutil.copy('O:/sigmena/utilidad/PROGRAMA/QGIS/QGISCUSTOMIZATION3.ini', os.path.join(usuario,'QGIS/QGISCUSTOMIZATION3.ini'))
-    
 
-        
+#para incluir un decorador que ponga SIGMENA
+    from qgis.PyQt.Qt import QTextDocument
+    from qgis.PyQt.QtGui import QFont
+    mQFont = "Sans Serif"
+
+    mQFontsize = 9
+    mLabelQString = "SIGMENA"
+    mMarginHorizontal = 0
+    mMarginVertical = 0
+    mLabelQColor = "#006600"
+    INCHES_TO_MM = 0.0393700787402 # 1 millimeter = 0.0393700787402 inches
+    case = 3
+    def add_copyright(p, text, xOffset, yOffset):
+        p.translate( xOffset , yOffset )
+        text.drawContents(p)
+        p.setWorldTransform( p.worldTransform() )
+    def _on_render_complete(p):
+        deviceHeight = p.device().height() # Get paint device height on which this painter is currently painting
+        deviceWidth = p.device().width() # Get paint device width on which this painter is currently painting
+        # Create new container for structured rich text
+        text = QTextDocument()
+        font = QFont()
+        font.setFamily(mQFont)
+        font.setPointSize(int(mQFontsize))
+        text.setDefaultFont(font)
+        style = "<style type=\"text/css\"> p { color: " + mLabelQColor + "}</style>"
+        text.setHtml( style + "<p>" + mLabelQString + "</p>" )
+        # Text Size
+        size = text.size()
+        # RenderMillimeters
+        pixelsInchX = p.device().logicalDpiX()
+        pixelsInchY = p.device().logicalDpiY()
+        xOffset = pixelsInchX * INCHES_TO_MM * int(mMarginHorizontal)
+        yOffset = pixelsInchY * INCHES_TO_MM * int(mMarginVertical)
+        # Calculate positions
+        if case == 0:
+            # Top Left
+            add_copyright(p, text, xOffset, yOffset)
+        elif case == 1:
+            # Bottom Left
+            yOffset = deviceHeight - yOffset - size.height()
+            add_copyright(p, text, xOffset, yOffset)
+        elif case == 2:
+            # Top Right
+            xOffset = deviceWidth - xOffset - size.width()
+            add_copyright(p, text, xOffset, yOffset)
+        elif case == 3:
+            # Bottom Right
+            yOffset = deviceHeight - yOffset - size.height()
+            xOffset = deviceWidth - xOffset - size.width()
+            add_copyright(p, text, xOffset, yOffset)
+        elif case == 4:
+            # Top Center
+            xOffset = deviceWidth / 2
+            add_copyright(p, text, xOffset, yOffset)
+        else:
+            # Bottom Center
+            yOffset = deviceHeight - yOffset - size.height()
+            xOffset = deviceWidth / 2
+            add_copyright(p, text, xOffset, yOffset)
+    # Emitted when the canvas has rendered
+    iface.mapCanvas().renderComplete.connect(_on_render_complete)
+    # Repaint the canvas map
+    iface.mapCanvas().refresh()
