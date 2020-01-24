@@ -13,6 +13,9 @@ complementos=['sigpac','alidadas','gpsDescargaCarga','hectareas','silvilidar','z
 #lista de servicios wms a tener cargados
 lista_WMS_URL=["http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx","http://www.idee.es/wms/pnoa/pnoa?"]
 lista_WMS_NAME=["Catastro","Ortofoto_reciente"]
+#teselas xyz a tener cargadas
+lista_xyz_name=["Bing_Satelite","Google_Satelite"]
+lista_xyz_url=[r"http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=0&dir=dir_n\x2019","http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}"]
 
 # esta funcion es la que va a ejecutar siempre
 def sigmena():
@@ -83,8 +86,16 @@ def sigmena():
             QSettings().setValue("/qgis/connections-wms/%s/smoothPixmapTransform" % WMS_NAME, "")
             QSettings().setValue("/qgis/connections-wms/%s/url" % WMS_NAME, WMS_URL)
 
-#para anadir las imagenes de bing,
-    #QSettings().setValue("/qgis/connections-xyz/Bing%20Sat%E9lite/url","http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=0&dir=dir_n\x2019")
+#para anadir las imagenes de teselas
+
+    for xyz_name, xyz_url in zip(lista_xyz_name,lista_xyz_url):
+        if "qgis/connections-xyz/%s/url" % xyz_name not in QSettings().allKeys():
+            #QSettings().setValue("/qgis/connections-xyz/Bing%20Sat%E9lite/url","http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=0&dir=dir_n\x2019")
+            #QSettings().setValue("/qgis/connections-xyz/relieve/url","https://mt1.google.com/vt/lyrs=t&x={x}&y={y}&z={z}")
+            QSettings().setValue("/qgis/connections-xyz/%s/url" % xyz_name, "%s" % xyz_url)
+# Remove a QGIS toolbar (e.g., the File toolbar)
+    #fileToolBar = self.iface.fileToolBar()
+    #self.iface.mainWindow().removeToolBar( fileToolBar )
             
 
 #para que por defecto coja la ruta donde estan las plantillas de mapas, composiciones de mapas en formato qpt
@@ -110,16 +121,17 @@ def sigmena():
     usuario= QgsApplication.qgisSettingsDirPath()
     shutil.copy('O:/sigmena/utilidad/PROGRAMA/QGIS/QGISCUSTOMIZATION3.ini', os.path.join(usuario,'QGIS/QGISCUSTOMIZATION3.ini'))
 
-#para incluir un decorador que ponga SIGMENA
+#para incluir un decorador 
     from qgis.PyQt.Qt import QTextDocument
     from qgis.PyQt.QtGui import QFont
     mQFont = "Sans Serif"
 
-    mQFontsize = 9
+    mQFontsize = 10
     mLabelQString = "SIGMENA"
     mMarginHorizontal = 0
     mMarginVertical = 0
     mLabelQColor = "#006600"
+    mLabelQColor2 = "#FFFFFF"
     INCHES_TO_MM = 0.0393700787402 # 1 millimeter = 0.0393700787402 inches
     case = 3
     def add_copyright(p, text, xOffset, yOffset):
@@ -135,7 +147,7 @@ def sigmena():
         font.setFamily(mQFont)
         font.setPointSize(int(mQFontsize))
         text.setDefaultFont(font)
-        style = "<style type=\"text/css\"> p { color: " + mLabelQColor + "}</style>"
+        style = "<style type=\"text/css\"> p { color: " + mLabelQColor + " ; background: " + mLabelQColor2 + " }</style>" 
         text.setHtml( style + "<p>" + mLabelQString + "</p>" )
         # Text Size
         size = text.size()
