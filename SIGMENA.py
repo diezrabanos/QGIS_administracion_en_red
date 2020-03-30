@@ -2,20 +2,27 @@
 #inspirado desde https://boundless-desktop.readthedocs.io/en/latest/system_admins/globalsettings.html
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QSettings
-from qgis.utils import iface,home_plugin_path, loadPlugin, startPlugin, plugins
-from qgis.core import QgsApplication
+from PyQt5.QtWidgets import QToolBar, QDockWidget, QMenuBar
+from qgis.utils import iface,home_plugin_path, loadPlugin, startPlugin, plugins,unloadPlugin,findPlugins
+from qgis.core import QgsApplication, QgsStyle
 import zipfile
 import os
 import shutil
+#import qgis
+#import configparser
 
 #lista de complementos a tener instalados
-complementos=['sigpac','alidadas','gpsDescargaCarga','hectareas','silvilidar','zoomSigmena','puntossigmena','ptos2pol']
+complementos_con_version=[['sigpac',"1.20.5"],['alidadas',"1.0.4"],['gpsDescargaCarga',"1.0.7"],['hectareas',"1.0.2"],['silvilidar',"1.0.8"],['puntossigmena',"1.0.1"],['ptos2pol',"1.0.2"],['zoomSigmena',"1.0.4"]]
+#ruta archivos de estilo xml
+archivosestilos=r"O:\sigmena\leyendas\QGIS_Estilo_SIGMENA/SIGMENA_ST_Valladolid.xml"
 #lista de servicios wms a tener cargados
 lista_WMS_URL=["http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx","http://www.idee.es/wms/pnoa/pnoa?"]
 lista_WMS_NAME=["Catastro","Ortofoto_reciente"]
 #teselas xyz a tener cargadas
 lista_xyz_name=["Bing_Satelite","Google_Satelite"]
 lista_xyz_url=[r"http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=0&dir=dir_n\x2019","http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}"]
+listatoolbars=['mLabelToolBar']
+
 
 # esta funcion es la que va a ejecutar siempre
 def sigmena():
@@ -33,27 +40,44 @@ def sigmena():
     #Projections/showDatumTransformDialog
     
 #informacion nueva en sigmena
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/title',"NOVEDAD SIGMENA 4 DICIEMBRE")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/content',"<p>Tenemos posibilidad de tener novedades de Sigmena de esta manera, asi que ire poniendo todas las novedades de esta manera. Pincha en este texto para saber mas</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/title',"NOVEDAD SIGMENA 4 DICIEMBRE")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/content',"<p>Tenemos posibilidad de tener novedades de Sigmena de esta manera, asi que ire poniendo todas las novedades de esta manera. Pincha en este texto para saber mas</p>")
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/link','O:/sigmena/notas/Sigmena.htm')
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/link','O:/sigmena/notas/Sigmena.htm')
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/1000/sticky','true')
+
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20200124/title',"MANUAL COMPLEMENTOS SIGMENA")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20200124/content',"<p>Animacion para ver como funcionan los complementos SIGMENA. Pincha en este texto para saber mas</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20200124/link',r"O:/sigmena/utilidad/programa/QGIS/Complementos/Manual/Manual_complementos_SIGMENA.htm")
+    
 #repositorio de complementos sigmena  
     QSettings().setValue('/app/plugin_installer/checkOnStart','false')
     QSettings().setValue('/app/plugin_repositories/SIGMENA/url','https://raw.githubusercontent.com/diezrabanos/qgis_plugins/master/servidor_descargas_sigmena.xml')
     QSettings().setValue('/app/plugin_repositories/SIGMENA/authcfg','')
     QSettings().setValue('/app/plugin_repositories/Repositorio%20oficial%20de%20complementos%20de%20QGIS\enabled','false')
     QSettings().setValue('/app/plugin_repositories/SIGMENA/enabled','true')
+    
+#para actualizar los complementos que tenemos instalados
+    for i in range(0,len(complementos_con_version)):
+        for x in findPlugins(home_plugin_path):
+            if x[0]==complementos_con_version[i][0]:
+                versioninstalada=str(x[1].get('general',"version"))
 
+        if versioninstalada==complementos_con_version[i][1]:
+            continue
+        else:
+            unloadPlugin(complementos_con_version[i][0])#desinstala si version antigua de un complemento instalado
+            
 #para instalar complementos interesantes si no estan cargados
-    for elemento in complementos:
-        if elemento not in plugins: 
+    for i in range(0,len(complementos_con_version)):
+        if complementos_con_version[i][0] not in plugins: 
             # Installing
-            zip_ref = zipfile.ZipFile('O:/sigmena/utilidad/PROGRAMA/QGIS/Complementos/'+elemento+'.zip', 'r')
+            zip_ref = zipfile.ZipFile('O:/sigmena/utilidad/PROGRAMA/QGIS/Complementos/'+complementos_con_version[i][0]+'.zip', 'r')
             zip_ref.extractall(home_plugin_path)
             zip_ref.close()
-            loadPlugin(elemento)
-            startPlugin(elemento)
+            loadPlugin(complementos_con_version[i][0])
+            startPlugin(complementos_con_version[i][0])
         
 #esto es para que si estan instalados los active    
     try:  
@@ -97,12 +121,19 @@ def sigmena():
     #fileToolBar = self.iface.fileToolBar()
     #self.iface.mainWindow().removeToolBar( fileToolBar )
             
+#para importar estilos de un archivo xml
+
+    style=QgsStyle.defaultStyle()
+    style.importXml(archivosestilos)
+#style.addFavorite(QgsStyle.SymbolEntity, 'mup')
+#style.addFavorite(QgsStyle.SymbolEntity, 'vvpp')
 
 #para que por defecto coja la ruta donde estan las plantillas de mapas, composiciones de mapas en formato qpt
     QSettings().setValue("/app/LastComposerTemplateDir","O:/sigmena/leyendas")
 
 #para evitar problemas con la codificacion de las capas, caracteres extranos
-    QSettings().setValue("/UI/encoding","latin1")
+    QSettings().setValue("/UI/encoding","UTF-8")
+    QSettings().setValue("/qgis/ignoreShapeEncoding","false")
 
 #para establecer colores por defecto, la seleccion si no dice otra cosa el proyecto se hace en amarillo y semitransparente.
     QSettings().setValue("/qgis/default_selection_color_red","255")
@@ -113,13 +144,34 @@ def sigmena():
 #para hacer que las mediciones sean planimetricas, evitando el error por medir sobre el elipsoide
     QSettings().setValue("/qgis/measure/planimetric","true")
 
-#copiar el archivo de rejilla necesario, no me deja por los permisos de usuario
+#para que no compruebe si hay nuevas versiones
+    QSettings().setValue("/qgis/checkVersion","false")
+
+#para que el snapping este desactivado por defecto porque ralentiza mucho la edicion
+    QSettings().setValue("/qgis/digitizing/default_snap_enabled","false")
+
+
+#copiar el archivo de rejilla necesario, no me deja por los permisos de usuario lo hago con un bat
     
     #shutil.copy('O:/sigmena/utilidad/PROGRAMA/QGIS/SPED2ETV2.gsb', 'C:/Program Files/QGIS 3.10/share/proj/SPED2ETV2.gsb')
 
+
+#activo la personalizacion de la visualizacion
+    QSettings().setValue("/UI/Customization/enabled","true")
 #copiar el archivo de configuracion visual de qgis
     usuario= QgsApplication.qgisSettingsDirPath()
     shutil.copy('O:/sigmena/utilidad/PROGRAMA/QGIS/QGISCUSTOMIZATION3.ini', os.path.join(usuario,'QGIS/QGISCUSTOMIZATION3.ini'))
+
+
+    
+
+
+#desabilito el snapping
+    #iface.mainWindow().findChild(QDockWidget, 'Snapping and Digitizing Options').findChild(QDialog).findChild(QComboBox,'mSnapModeComboBox').setCurrentIndex(0) #0 = current layer 1 = all layers 2 = advanced
+    #for item in QgsMapLayerRegistry.instance().mapLayers().values():
+        #QgsProject.instance().setSnapSettingsForLayer(item.id(), False, 2, 0, 2, True)
+    
+    #iface.mapCanvas().snappingUtils().toggleEnabled()
 
 #para incluir un decorador 
     from qgis.PyQt.Qt import QTextDocument
