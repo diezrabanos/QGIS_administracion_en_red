@@ -1,3 +1,4 @@
+# -*- coding: cp1252 -*-
 #este archivo es llamado desde startup.py que tiene cada usuario en su carpeta C:\Users\usuario_x\AppData\Roaming\QGIS\QGIS3 y se ejecuta cada vez que se abre el qgis 3.
 #inspirado desde https://boundless-desktop.readthedocs.io/en/latest/system_admins/globalsettings.html
 from PyQt5.QtWidgets import QMessageBox
@@ -11,10 +12,19 @@ import shutil
 #import qgis
 #import configparser
 
+#para debug
+# Code for printing to a file 
+#debug = open('O:/sigmena/utilidad/PROGRAMA/QGIS/Complementos/errores.txt', 'w') 
+  
+
+
+
+
 #lista de complementos a tener instalados
-complementos_con_version=[['sigpac',"1.20.5"],['alidadas',"1.0.4"],['gpsDescargaCarga',"1.0.7"],['hectareas',"1.0.2"],['silvilidar',"1.0.8"],['puntossigmena',"1.0.1"],['ptos2pol',"1.0.2"],['zoomSigmena',"1.0.4"]]
+complementos_con_version=[['sigpac',"1.20.7"],['alidadas',"1.0.5"],['gpsDescargaCarga',"1.0.8"],['hectareas',"1.0.3"],['silvilidar',"1.0.9"],['puntossigmena',"1.0.3"],['ptos2pol',"1.0.3"],['zoomSigmena',"1.0.6"],['censosPuntos',"1.0.0"]]
 #ruta archivos de estilo xml
-archivosestilos=r"O:\sigmena\leyendas\QGIS_Estilo_SIGMENA/SIGMENA_ST_Valladolid.xml"
+archivosestilos=r"O:\sigmena\leyendas\QGIS_Estilo_SIGMENA/SIGMENA_SIMBOLOGIA.xml"
+estilosfavoritos=['dNBR','Parcela','Recinto','MUP','Comarca Forestal', 'Cortafuego 12 m', 'Cortafuegos 3 m', 'Cortafuegos 6 m', 'Cortafuegos 9 m', 'Cotos pesca', 'Fauna Censos Itinerario', 'IMENAS', 'Incendios Puntos de Inicio', 'Incendios Quemado', 'Intrusiones', 'MUP', 'Mojon 1Orden', 'Mojon 2Orden', 'Mojon Monte', 'Monte Certificado', 'Monte Ordenado', 'Montes Gestionados', 'Municipio', 'Ocupaciones', 'Pista Incidencia', 'Pista L1', 'Pista L2', 'Pista L3', 'Pista Sin Clasificar', 'Regeneracion Muy Dificil',  'Rodales', 'Senderos GR', 'Termino Municipal', 'Tratamiento selvicola', 'Vias Pecurias Clasificación Trazado',  'ZEC', 'ZEPA','NDVI'] 
 #lista de servicios wms a tener cargados
 lista_WMS_URL=["http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx","http://www.idee.es/wms/pnoa/pnoa?"]
 lista_WMS_NAME=["Catastro","Ortofoto_reciente"]
@@ -48,7 +58,7 @@ def sigmena():
 
     QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20200124/title',"MANUAL COMPLEMENTOS SIGMENA")
     QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20200124/content',"<p>Animacion para ver como funcionan los complementos SIGMENA. Pincha en este texto para saber mas</p>")
-    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20200124/image',"file:///o:/sigmena/logos/LogoSIGMENA.jpg")
     QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20200124/link',r"O:/sigmena/utilidad/programa/QGIS/Complementos/Manual/Manual_complementos_SIGMENA.htm")
     
 #repositorio de complementos sigmena  
@@ -57,29 +67,86 @@ def sigmena():
     QSettings().setValue('/app/plugin_repositories/SIGMENA/authcfg','')
     QSettings().setValue('/app/plugin_repositories/Repositorio%20oficial%20de%20complementos%20de%20QGIS\enabled','false')
     QSettings().setValue('/app/plugin_repositories/SIGMENA/enabled','true')
-    
-#para actualizar los complementos que tenemos instalados
-    for i in range(0,len(complementos_con_version)):
-        for x in findPlugins(home_plugin_path):
-            if x[0]==complementos_con_version[i][0]:
-                versioninstalada=str(x[1].get('general',"version"))
 
-        if versioninstalada==complementos_con_version[i][1]:
-            continue
-        else:
-            unloadPlugin(complementos_con_version[i][0])#desinstala si version antigua de un complemento instalado
-            
-#para instalar complementos interesantes si no estan cargados
+#compruebo que existe la carpeta con los complementos
+    directorio = home_plugin_path
+    try:
+        os.stat(directorio)
+#para desinstalar si no la version correcta de un complemento
+        for i in range(0,len(complementos_con_version)):
+                #print(complementos_con_version[i][0])
+                for x in findPlugins(home_plugin_path):
+                    #print(x)
+                    if x[0]==complementos_con_version[i][0]:
+                        #print(x[0],"==",complementos_con_version[i][0], file = debug) 
+                        
+                        versioninstalada=str(x[1].get('general',"version"))
+                        #print(versioninstalada, file = debug) 
+                    else:
+                        #versioninstalada="0.0.0"
+                        pass
+                        
+
+                if versioninstalada==complementos_con_version[i][1]:
+                    #print("no deberia hacer nada", file = debug) 
+                    continue
+                else:
+                    #print ("se supone que desinstalo",complementos_con_version[i][0], file = debug)
+                    #print(versioninstalada,complementos_con_version[i][1], file = debug)
+                    unloadPlugin(complementos_con_version[i][0])#desinstala si version antigua de un complemento instalado
+                    #print("plugins a instalar ",complementos_con_version[i][0], file = debug)
+                    #para instalar un complemento                
+                    # Installing
+                    zip_ref = zipfile.ZipFile('O:/sigmena/utilidad/PROGRAMA/QGIS/Complementos/'+complementos_con_version[i][0]+'.zip', 'r')
+                    zip_ref.extractall(home_plugin_path)
+                    zip_ref.close()
+                    loadPlugin(complementos_con_version[i][0])
+                    startPlugin(complementos_con_version[i][0])
+     
+    except:
+      os.mkdir(directorio)
+      for i in range(0,len(complementos_con_version)):
+      #para instalar un complemento                
+                    # Installing
+                    zip_ref = zipfile.ZipFile('O:/sigmena/utilidad/PROGRAMA/QGIS/Complementos/'+complementos_con_version[i][0]+'.zip', 'r')
+                    zip_ref.extractall(home_plugin_path)
+                    zip_ref.close()
+                    loadPlugin(complementos_con_version[i][0])
+                    startPlugin(complementos_con_version[i][0])
+#para desinstalar si no la version correcta de un complemento
     for i in range(0,len(complementos_con_version)):
-        if complementos_con_version[i][0] not in plugins: 
-            # Installing
-            zip_ref = zipfile.ZipFile('O:/sigmena/utilidad/PROGRAMA/QGIS/Complementos/'+complementos_con_version[i][0]+'.zip', 'r')
-            zip_ref.extractall(home_plugin_path)
-            zip_ref.close()
-            loadPlugin(complementos_con_version[i][0])
-            startPlugin(complementos_con_version[i][0])
-        
-#esto es para que si estan instalados los active    
+            #print(complementos_con_version[i][0])
+            for x in findPlugins(home_plugin_path):
+                #print(x)
+                if x[0]==complementos_con_version[i][0]:
+                    #print(x[0],"==",complementos_con_version[i][0], file = debug) 
+                    versioninstalada=str(x[1].get('general',"version"))
+                    #print(versioninstalada, file = debug) 
+                else:
+                    #versioninstalada="0.0.0"
+                    pass
+                    
+
+            if versioninstalada==complementos_con_version[i][1]:
+                #print("no deberia hacer nada", file = debug) 
+                continue
+            else:
+                #print ("se supone que desinstalo",complementos_con_version[i][0], file = debug)
+                #print(versioninstalada,complementos_con_version[i][1], file = debug)
+                unloadPlugin(complementos_con_version[i][0])#desinstala si version antigua de un complemento instalado
+                #print("plugins a instalar ",complementos_con_version[i][0], file = debug)
+                #para instalar un complemento                
+                # Installing
+                zip_ref = zipfile.ZipFile('O:/sigmena/utilidad/PROGRAMA/QGIS/Complementos/'+complementos_con_version[i][0]+'.zip', 'r')
+                zip_ref.extractall(home_plugin_path)
+                zip_ref.close()
+                loadPlugin(complementos_con_version[i][0])
+                startPlugin(complementos_con_version[i][0])
+     
+
+  
+    
+    #esto es para que si estan instalados los active    
     try:  
         QSettings().setValue('/PythonPlugins/zoomSigmena','true')
         QSettings().setValue('/PythonPlugins/alidadas','true')
@@ -89,8 +156,9 @@ def sigmena():
         QSettings().setValue('/PythonPlugins/silvilidar','true')
         QSettings().setValue('/PythonPlugins/puntossigmena','true')
         QSettings().setValue('/PythonPlugins/ptos2pol','true')
+        QSettings().setValue('/PythonPlugins/censosPuntos','true')
     except:
-        pass
+        pow
 #para que no pierda tiempo buscando si hay actualizaciones de los complementos instalados
     QSettings().setValue("/app/plugin_installer/checkOnStart","false")
 
@@ -125,7 +193,9 @@ def sigmena():
 
     style=QgsStyle.defaultStyle()
     style.importXml(archivosestilos)
-#style.addFavorite(QgsStyle.SymbolEntity, 'mup')
+    for estilo in estilosfavoritos:
+        print (estilo)
+        style.addFavorite(QgsStyle.SymbolEntity, estilo)
 #style.addFavorite(QgsStyle.SymbolEntity, 'vvpp')
 
 #para que por defecto coja la ruta donde estan las plantillas de mapas, composiciones de mapas en formato qpt
@@ -238,3 +308,6 @@ def sigmena():
     iface.mapCanvas().renderComplete.connect(_on_render_complete)
     # Repaint the canvas map
     iface.mapCanvas().refresh()
+    
+    #debug.close()
+
