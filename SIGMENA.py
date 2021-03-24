@@ -21,7 +21,7 @@ import shutil
 
 
 #lista de complementos a tener instalados
-complementos_con_version=[['impresion_sigmena',"1.0.0"],['sigpac',"1.20.93"],['alidadas',"1.0.6"],['gpsDescargaCarga',"1.0.10"],['hectareas',"1.0.3"],['silvilidar',"1.0.9"],['puntossigmena',"1.0.3"],['ptos2pol',"1.0.3"],['zoomSigmena',"1.1.1"],['censosPuntos',"1.0.0"]]
+complementos_con_version=[['impresion_sigmena',"1.0.0"],['sigpac',"1.21.1"],['alidadas',"1.0.6"],['gpsDescargaCarga',"1.0.10"],['hectareas',"1.0.3"],['HectareasEdicion',"1.0.2"],['silvilidar',"1.0.9"],['puntossigmena',"1.0.3"],['ptos2pol',"1.0.3"],['zoomSigmena',"1.1.1"],['censosPuntos',"1.0.0"]]
 #ruta archivos de estilo xml
 archivosestilos=r"O:\sigmena\leyendas\QGIS_Estilo_SIGMENA/SIGMENA_SIMBOLOGIA.xml"
 estilosfavoritos=['dNBR','Parcela','Recinto','MUP','Comarca Forestal', 'Cortafuego 12 m', 'Cortafuegos 3 m', 'Cortafuegos 6 m', 'Cortafuegos 9 m', 'Cotos pesca', 'Fauna Censos Itinerario', 'IMENAS', 'Incendios Puntos de Inicio', 'Incendios Quemado', 'Intrusiones', 'MUP', 'Mojon 1Orden', 'Mojon 2Orden', 'Mojon Monte', 'Monte Certificado', 'Monte Ordenado', 'Montes Gestionados', 'Municipio', 'Ocupaciones', 'Pista Incidencia', 'Pista L1', 'Pista L2', 'Pista L3', 'Pista Sin Clasificar', 'Regeneracion Muy Dificil',  'Rodales', 'Senderos GR', 'Termino Municipal', 'Tratamiento selvicola', 'Vias Pecurias Clasificación Trazado',  'ZEC', 'ZEPA','NDVI','Cotos Pesca Refugio de Pesca','Cotos Pesca Escenario Deportivo Social','Cotos Pesca Coto de Pesca','Cotos Pesca Aguas de Acceso Libre: Excepciones','Cotos Pesca Aguas de Acceso Libre','Cotos Pesca Agua en Régimen Especial con Extracción Controlada','Cotos Pesca Agua en Régimen Especial'] 
@@ -55,30 +55,53 @@ def sigmena():
 #informacion nueva en sigmena
     QSettings().setValue('/core/NewsFeed\httpsfeedqgisorg\disabled','false')
 
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210219/title',"Visor MACOTE")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210219/content',"<p> Tragsa ha generado un visor para tratar de estimar las zonas con en las que es posible la <b>extración de madera con Teleferico</b>. Pincha en este texto para ampliar</p>")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210324/title',"Complemento calcula hectareas mientras editas")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210324/content',"<p style=color:green;>Este complemento os ayudará a cuadrar las superficies en las propuestas</p>")
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210219/link',"O:/sigmena/notas/blog_sigmena/TODOS_LOS_ARTICULOS.html")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210324/link',"O:/sigmena/notas/blog_sigmena/EDICION.html")
 
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210212/title',"Estado vuelos LiDAR - PNOA")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210212/content',"<p> Hay en el Blog información nueva respecto al estado del vuelo <b>LiDAR</b>. Pincha en este texto para ampliar</p>")
-    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210212/link',"O:/sigmena/notas/blog_sigmena/LIDAR.html")
 
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210209/title',"CARTOGRAFÍA FORESTACIÓN DE TIERRAS AGRÁRIAS")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210209/content',"<p> En el Blog he añadido una entrada referente a la cartografía que han recopilado desde Tragsa del programa de <b>forestación</b> de tierras agrárias. Pincha en este texto para ampliar</p>")
-    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210209/link',"O:/sigmena/notas/blog_sigmena/FORESTACION.html")
 
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210211/title',"PERÍMETRO INCENDIOS 2020")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210211/content',"<p> En el Blog he añadido una entrada para que sepais que ya está la capa de perímetros de incendios 2020. Pincha en este texto para ampliar</p>")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210225/title',"Ortofotos 2020")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210225/content',"<p>Empiezan a estar disponibles las ortofotos de PNOA 2020. En teoría tendremos disponible toda la provincia pero han empezado a liberar la zona oeste y norte. Pincha en este texto para ampliar</p>")
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210211/link',"O:/sigmena/notas/Blog_Sigmena/INCENDIOS.html")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210225/link',"O:/sigmena/notas/blog_sigmena/ORTOFOTOS.html")
+
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210224/title',"Actualización a SIGPAC 2021")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210224/content',"<p> Nos han pasado desde Agricultura la cartografía del <b>Sigpac actualizada a 2021</b>. Si utilizais el complemento ya os carga la cartografía nueva. He aprovechado para actualizar el botón. Pincha en este texto para ampliar</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210224/link',"O:/sigmena/notas/blog_sigmena/SIGPAC.html")
+
+
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210220/title',"Plan de Monitorización de Fauna")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210220/content',"<p style=color:red;> Tenemos nueva cartografía del <b>Plan de Monitorización de Fauna</b>. Pincha en este texto para ampliar</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210220/link',"O:/sigmena/notas/blog_sigmena/ESPECIES.html")
+
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210219/title',"Visor MACOTE")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210219/content',"<p> Tragsa ha generado un visor para tratar de estimar las zonas con en las que es posible la <b>extración de madera con Teleferico</b>. Pincha en este texto para ampliar</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210219/link',"O:/sigmena/notas/blog_sigmena/TODOS_LOS_ARTICULOS.html")
+
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210212/title',"Estado vuelos LiDAR - PNOA")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210212/content',"<p> Hay en el Blog información nueva respecto al estado del vuelo <b>LiDAR</b>. Pincha en este texto para ampliar</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210212/link',"O:/sigmena/notas/blog_sigmena/LIDAR.html")
+
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210209/title',"CARTOGRAFÍA FORESTACIÓN DE TIERRAS AGRÁRIAS")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210209/content',"<p> En el Blog he añadido una entrada referente a la cartografía que han recopilado desde Tragsa del programa de <b>forestación</b> de tierras agrárias. Pincha en este texto para ampliar</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210209/link',"O:/sigmena/notas/blog_sigmena/FORESTACION.html")
+
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210211/title',"PERÍMETRO INCENDIOS 2020")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210211/content',"<p> En el Blog he añadido una entrada para que sepais que ya está la capa de perímetros de incendios 2020. Pincha en este texto para ampliar</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210211/link',"O:/sigmena/notas/Blog_Sigmena/INCENDIOS.html")
     
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210202/title',"IMAGENES DE SENTINEL")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210202/content',"<p> En el Blog he añadido una entrada referente a como cargar imagenes de Sentinel que he descargado del 2020. Pincha en este texto para ampliar</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210202/title',"IMAGENES DE SENTINEL")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210202/content',"<p> En el Blog he añadido una entrada referente a como cargar imagenes de Sentinel que he descargado del 2020. Pincha en este texto para ampliar</p>")
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210202/link',"O:/sigmena/notas/Blog_Sigmena/SENTINEL.html")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210202/link',"O:/sigmena/notas/Blog_Sigmena/SENTINEL.html")
     
     
 
