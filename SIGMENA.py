@@ -5,10 +5,55 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QToolBar, QDockWidget, QMenuBar
 from qgis.utils import iface,home_plugin_path, loadPlugin, startPlugin, plugins,unloadPlugin,findPlugins
-from qgis.core import QgsApplication, QgsStyle
+from qgis.core import QgsApplication, QgsStyle,QgsExpression
 import zipfile
 import os
 import shutil
+import datetime
+from shutil import copyfile
+import sys
+
+#para que si abres qgis un lunes antes de las 12 se abra el blog, pero solo la primera vez.
+
+
+diadelasemana=datetime.datetime.now().weekday()
+hora=datetime.datetime.now().time()
+archivo=r"O:/sigmena/notas/blog_sigmena/TODOS_LOS_ARTICULOS.html"
+contador = home_plugin_path + "/visitadoblog.txt"
+if diadelasemana==0 and hora<datetime.time(15, 00, 00, 173504):
+    try:
+        file = open(contador, "r")
+        mensaje = file.read()
+        if str(mensaje)=="0":
+            print(mensaje)
+            os.popen(archivo)
+            file = open(contador, "w")
+            file.write("1")
+            file.close()
+        if str(mensaje)=="1":
+             pass
+    except:
+        file = open(contador, "w")
+        file.write("1")
+        file.close()
+        os.popen(archivo)
+else:
+    try:
+        file = open(contador, "r")
+        mensaje = file.read()
+        file.close()
+        if str(mensaje)=="0":
+            pass
+        if str(mensaje)=="1":
+            file = open(contador, "w")
+            file.write("0")
+            file.close()
+            
+    except:
+        file = open(contador, "w")
+        file.write("0")
+        file.close()
+    
 #import qgis
 #import configparser
 
@@ -17,17 +62,16 @@ import shutil
 #debug = open('O:/sigmena/utilidad/PROGRAMA/QGIS/Complementos/errores.txt', 'w') 
   
 
-
-
-
+#lista de funciones a tener instaladas
+funciones=['intersecciona','x_redondeo','y_redondeo','interseccion_suma_hectareas','interseccion_cuenta_elementos']
 #lista de complementos a tener instalados
-complementos_con_version=[['impresion_sigmena',"1.0.0"],['sigpac',"1.21.1"],['alidadas',"1.0.6"],['gpsDescargaCarga',"1.0.10"],['hectareas',"1.0.3"],['HectareasEdicion',"1.0.2"],['silvilidar',"1.0.9"],['puntossigmena',"1.0.3"],['ptos2pol',"1.0.3"],['zoomSigmena',"1.1.1"],['censosPuntos',"1.0.0"]]
+complementos_con_version=[['impresion_sigmena',"1.0.0"],['sigpac',"1.21.2"],['alidadas',"1.0.6"],['gpsDescargaCarga',"1.0.11"],['hectareas',"1.0.3"],['HectareasEdicion',"1.0.2"],['silvilidar',"1.0.9"],['puntossigmena',"1.0.3"],['ptos2pol',"1.0.3"],['zoomSigmena',"1.1.1"],['censosPuntos',"1.0.0"]]
 #ruta archivos de estilo xml
 archivosestilos=r"O:\sigmena\leyendas\QGIS_Estilo_SIGMENA/SIGMENA_SIMBOLOGIA.xml"
-estilosfavoritos=['dNBR','Parcela','Recinto','MUP','Comarca Forestal', 'Cortafuego 12 m', 'Cortafuegos 3 m', 'Cortafuegos 6 m', 'Cortafuegos 9 m', 'Cotos pesca', 'Fauna Censos Itinerario', 'IMENAS', 'Incendios Puntos de Inicio', 'Incendios Quemado', 'Intrusiones', 'MUP', 'Mojon 1Orden', 'Mojon 2Orden', 'Mojon Monte', 'Monte Certificado', 'Monte Ordenado', 'Montes Gestionados', 'Municipio', 'Ocupaciones', 'Pista Incidencia', 'Pista L1', 'Pista L2', 'Pista L3', 'Pista Sin Clasificar', 'Regeneracion Muy Dificil',  'Rodales', 'Senderos GR', 'Termino Municipal', 'Tratamiento selvicola', 'Vias Pecurias Clasificación Trazado',  'ZEC', 'ZEPA','NDVI','Cotos Pesca Refugio de Pesca','Cotos Pesca Escenario Deportivo Social','Cotos Pesca Coto de Pesca','Cotos Pesca Aguas de Acceso Libre: Excepciones','Cotos Pesca Aguas de Acceso Libre','Cotos Pesca Agua en Régimen Especial con Extracción Controlada','Cotos Pesca Agua en Régimen Especial'] 
+estilosfavoritos=['dNBR','Parcela','Recinto','MUP','Comarca Forestal', 'Cortafuego 12 m', 'Cortafuegos 3 m', 'Cortafuegos 6 m', 'Cortafuegos 9 m', 'Cotos pesca', 'Fauna Censos Itinerario', 'IMENAS', 'Incendios Puntos de Inicio', 'Incendios Quemado', 'Intrusiones', 'MUP', 'Mojon 1Orden', 'Mojon 2Orden', 'Mojon Monte', 'Monte Certificado', 'Monte Ordenado', 'Montes Gestionados', 'Municipio', 'Ocupaciones', 'Pista Incidencia', 'Pista L1', 'Pista L2', 'Pista L3', 'Pista Sin Clasificar', 'Regeneracion Muy Dificil',  'Rodales', 'Senderos GR', 'Termino Municipal', 'Tratamiento selvicola', 'Vias Pecurias Clasificación Trazado',  'ZEC', 'ZEPA','NDVI','Cotos Pesca Refugio de Pesca','Cotos Pesca Escenario Deportivo Social','Cotos Pesca Coto de Pesca','Cotos Pesca Aguas de Acceso Libre: Excepciones','Cotos Pesca Aguas de Acceso Libre','Cotos Pesca Agua en Régimen Especial con Extracción Controlada','Cotos Pesca Agua en Régimen Especial','RODAL_GESFOR','MONTE_GESFOR'] 
 #lista de servicios wms a tener cargados
-lista_WMS_URL=["http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx","http://www.idee.es/wms/pnoa/pnoa?","https://services.sentinel-hub.com/ogc/wms/0796fba8-667c-4f5f-8596-9d4d18c058e5","https://www.ign.es/wms/pnoa-historico"]
-lista_WMS_NAME=["Catastro","Ortofoto_reciente","Sentinel por meses","Ortofotos antiguas"]
+lista_WMS_URL=["http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx","https://idecyl.jcyl.es/geoserver/oi/gwc/service/wmts?service%3DWMTS%26request%3DGetCapabilities","https://services.sentinel-hub.com/ogc/wms/0796fba8-667c-4f5f-8596-9d4d18c058e5","https://www.ign.es/wms/pnoa-historico","https://wmts.mapama.gob.es/sig/evaluacionambiental/ea_energia_eolica/wms",'https://wmts.mapama.gob.es/sig/evaluacionambiental/ea_energia_fotovoltaica/wms','https://wms.mapa.gob.es/sigpac/wms','https://www.ign.es/wms-inspire/mapa-raster']
+lista_WMS_NAME=["Catastro","Ortofoto_reciente","Sentinel por meses","Ortofotos antiguas",'Sensibilidad_ambiental_eolicos','Sensibilidad_ambiental_fotovoltaicos','SIGPAC','IGN']
 #teselas xyz a tener cargadas
 lista_xyz_name=["Bing_Satelite","Google_Satelite","Stamen Terrain","Google Hybrid","Carto Positron","ESRI Topo"]
 lista_xyz_url=[r"http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=0&dir=dir_n\x2019","http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}","http://a.tile.stamen.com/terrain/{z}/{x}/{y}.png","https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}","https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png","https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"]
@@ -67,16 +111,21 @@ def sigmena():
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
     QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210225/link',"O:/sigmena/notas/blog_sigmena/ORTOFOTOS.html")
 
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210224/title',"Actualización a SIGPAC 2021")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210224/content',"<p> Nos han pasado desde Agricultura la cartografía del <b>Sigpac actualizada a 2021</b>. Si utilizais el complemento ya os carga la cartografía nueva. He aprovechado para actualizar el botón. Pincha en este texto para ampliar</p>")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210414/title',"Fotovoltaicos y Eolicos")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210414/content',"<p>Desde QGIS puedes visualizar la cartografia del MITECO de sensibilidad ambiental a estos parques. Pincha en este texto para ampliar</p>")
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210224/link',"O:/sigmena/notas/blog_sigmena/SIGPAC.html")
+    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210414/link',"O:/sigmena/notas/blog_sigmena/RENOVABLES.html")
+
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210224/title',"Actualización a SIGPAC 2021")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210224/content',"<p> Nos han pasado desde Agricultura la cartografía del <b>Sigpac actualizada a 2021</b>. Si utilizais el complemento ya os carga la cartografía nueva. He aprovechado para actualizar el botón. Pincha en este texto para ampliar</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210224/link',"O:/sigmena/notas/blog_sigmena/SIGPAC.html")
 
 
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210220/title',"Plan de Monitorización de Fauna")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210220/content',"<p style=color:red;> Tenemos nueva cartografía del <b>Plan de Monitorización de Fauna</b>. Pincha en este texto para ampliar</p>")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210220/title',"Plan de Monitorización de Fauna")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210220/content',"<p style=color:red;> Tenemos nueva cartografía del <b>Plan de Monitorización de Fauna</b>. Pincha en este texto para ampliar</p>")
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20191201/image',"O:/sigmena/logos/LogoSIGMENA.jpg")
-    QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210220/link',"O:/sigmena/notas/blog_sigmena/ESPECIES.html")
+    #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210220/link',"O:/sigmena/notas/blog_sigmena/ESPECIES.html")
 
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210219/title',"Visor MACOTE")
     #QSettings().setValue('/core/NewsFeed/httpsfeedqgisorg/20210219/content',"<p> Tragsa ha generado un visor para tratar de estimar las zonas con en las que es posible la <b>extración de madera con Teleferico</b>. Pincha en este texto para ampliar</p>")
@@ -199,6 +248,8 @@ def sigmena():
         QSettings().setValue('/PythonPlugins/puntossigmena','true')
         QSettings().setValue('/PythonPlugins/ptos2pol','true')
         QSettings().setValue('/PythonPlugins/censosPuntos','true')
+        QSettings().setValue('/PythonPlugins/HectareasEdicion','true')
+        
     except:
         pow
 #para que no pierda tiempo buscando si hay actualizaciones de los complementos instalados
@@ -240,6 +291,10 @@ def sigmena():
         style.addFavorite(QgsStyle.SymbolEntity, estilo)
 #style.addFavorite(QgsStyle.SymbolEntity, 'vvpp')
 
+#para que muestre el wms de sentibilidad ambiental
+    QSettings().setValue("/qgis/connections-wms/Sensibilidad_ambiental_eolicos/ignoreGetMapURI","true")
+    QSettings().setValue("/qgis/connections-wms/Sensibilidad_ambiental_fotovoltaicos/ignoreGetMapURI","true")
+
 #para que por defecto coja la ruta donde estan las plantillas de mapas, composiciones de mapas en formato qpt
     QSettings().setValue("/app/LastComposerTemplateDir","O:/sigmena/leyendas")
 
@@ -276,6 +331,40 @@ def sigmena():
     shutil.copy('O:/sigmena/utilidad/PROGRAMA/QGIS/QGISCUSTOMIZATION3.ini', os.path.join(usuario,'QGIS/QGISCUSTOMIZATION3.ini'))
 
 
+
+#para copiar la funcion al usuario si no la tiene
+    rutaexpresiones = home_plugin_path[:-7]+'expressions'
+    if rutaexpresiones not in sys.path:
+        sys.path.append(rutaexpresiones) 
+
+    if os.path.isdir(rutaexpresiones):
+        os.stat(rutaexpresiones)
+        for elem in funciones:
+            miruta=rutaexpresiones+'/'+elem+'.py'
+            origen="O:/sigmena/utilidad/PROGRAMA/QGIS/Funciones/"+elem+'.py'
+            if os.path.isfile(miruta):
+                pass
+            else: 
+                copyfile(origen, miruta)
+                #from intersecciona import intersecciona
+                #QgsExpression.registerFunction(intersecciona)
+                module = __import__(elem)
+                func = getattr(module, elem)
+                QgsExpression.registerFunction(func)
+                
+    else:
+        os.mkdir(rutaexpresiones)
+        for elem in funciones:
+            miruta=rutaexpresiones+'/'+elem+'.py'
+            origen="O:/sigmena/utilidad/PROGRAMA/QGIS/Funciones/"+elem+'.py'
+            copyfile(origen, miruta)
+            #from intersecciona import intersecciona
+            #QgsExpression.registerFunction(intersecciona)
+            module = __import__(elem)
+            func = getattr(module, elem)
+            QgsExpression.registerFunction(func)
+
+    
     
 
 
